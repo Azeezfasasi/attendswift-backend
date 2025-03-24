@@ -20,7 +20,8 @@ const StudentSchema = new mongoose.Schema({
             reason: String,
             status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" }
         }
-    ]
+    ],
+    promotionStatus: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("Student", StudentSchema);
