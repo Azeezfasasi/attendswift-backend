@@ -1,0 +1,274 @@
+const Student = require("../models/Student");
+
+// 1️⃣ Add a new student
+// exports.addStudent = async (req, res) => {
+//     try {
+//         const { name, email, grade, gender, section, age } = req.body;
+//         const student = await Student.create({ name, email, grade, section, age, gender, attendance: [], absences: [] });
+//         res.json(student);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// };
+
+const { v4: uuidv4 } = require("uuid"); // Import UUID
+
+// Function to generate a unique 9-digit number
+const generateUniqueId = async () => {
+    let uniqueId;
+    let isUnique = false;
+
+    while (!isUnique) {
+        uniqueId = Math.floor(100000000 + Math.random() * 900000000); // 9-digit number
+        const existingStudent = await Student.findOne({ uniqueId });
+        if (!existingStudent) {
+            isUnique = true;
+        }
+    }
+    
+    return uniqueId;
+};
+
+exports.addStudent = async (req, res) => {
+    try {
+        const { name, email, grade, gender, section, age } = req.body;
+        
+        // Generate a unique ID
+        const uniqueId = await generateUniqueId();
+
+        const student = await Student.create({
+            uniqueId,
+            name,
+            email,
+            grade,
+            section,
+            age,
+            gender,
+            attendance: [],
+            absences: []
+        });
+
+        res.json(student);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+// 2️⃣ Edit student details
+exports.editStudent = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const updates = req.body;
+        const student = await Student.findByIdAndUpdate(studentId, updates, { new: true });
+        if (!student) return res.status(404).json({ error: "Student not found" });
+        res.json(student);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 3️⃣ Mark student attendance
+exports.markAttendance = async (req, res) => {
+    try {
+        const attendanceData = req.body.attendance; // Get data from request body
+
+        // Process attendanceData to update student attendance
+        for (const item of attendanceData) {
+            const student = await Student.findById(item.studentId); 
+            if (student) {
+                student.attendance.push({ 
+                    date: new Date(),  // Use Date object for dates
+                    status: item.status.toLowerCase()  // Ensure lowercase status
+                });
+                await student.save();
+            }
+        }
+
+        res.status(200).json({ message: "Attendance marked successfully" });
+
+    } catch (err) {
+        console.error("Error in markAttendance:", err); // Log the error for debugging
+        res.status(500).json({ error: err.message });
+    }
+};
+
+exports.filterStudents = async (req, res) => {
+    try {
+        console.log("Query parameters:", req.query);
+        const { grade, section, date } = req.query; // Use 'grade' instead of 'studentClass'
+        const query = {};
+
+        if (grade) query.grade = grade;
+        if (section) query.section = section;
+
+        console.log("MongoDB Query:", query);
+
+        let students = await Student.find(query);
+        // console.log("Students found (before date filter):", students);
+
+        if (date) {
+            const filterDate = new Date(date);
+            console.log("Filter date:", filterDate);
+
+            students = students.filter(student => { // Reassign students here
+                return student.attendance.some(att => {
+                    const attDate = new Date(att.date);
+                    console.log("Attendance date:", attDate);
+                    return (
+                        attDate.getFullYear() === filterDate.getFullYear() &&
+                        attDate.getMonth() === filterDate.getMonth() &&
+                        attDate.getDate() === filterDate.getDate()
+                    );
+                });
+            });
+            console.log("Filtered students (after date filter):", students);
+            return res.json(students);
+        }
+
+        res.json(students);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 5️⃣ View past and current attendance records
+exports.getAttendanceRecords = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ error: "Student not found" });
+
+        res.json(student.attendance);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 6️⃣ Student submits an absence application
+exports.submitAbsenceRequest = async (req, res) => {
+    try {
+        const { studentId, reason } = req.body;
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ error: "Student not found" });
+
+        student.absences.push({ date: new Date().toISOString().split("T")[0], reason, status: "pending" });
+        await student.save();
+
+        res.json({ message: "Absence request submitted" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 7️⃣ Approve or reject an absence application
+exports.updateAbsenceRequest = async (req, res) => {
+    try {
+        const { studentId } = req.params; // Get studentId from URL parameters
+        const { absenceId, status } = req.body; // Add absenceId and status
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ error: "Student not found" });
+
+        const absence = student.absences.id(absenceId); // Find absence by ID
+        if (!absence) return res.status(404).json({ error: "Absence request not found" });
+
+        absence.status = status; // Update status (approved or rejected)
+        await student.save();
+
+        res.json({ message: "Absence request updated" });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 8️⃣ View all absence records (for all students)
+exports.getAllAbsenceRequests = async (req, res) => {
+    try {
+        const allAbsences = await Student.find({}, 'name grade section absences');
+        // Extract and flatten the absences array
+        const flattenedAbsences = allAbsences.reduce((acc, student) => {
+            return acc.concat(student.absences.map(absence => ({
+                ...absence.toObject(),
+                studentId: student._id,
+                studentName: student.name,
+                studentGrade: student.grade,
+                studentSection: student.section
+            })));
+        }, []); // Initialize acc as an empty array here
+        res.json(flattenedAbsences);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 7️⃣ View absence records
+exports.viewAbsences = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const student = await Student.findById(studentId);
+        if (!student) return res.status(404).json({ error: "Student not found" });
+
+        res.json(student.absences);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// 8️⃣ View student details
+// exports.getStudentDetails = async (req, res) => {
+//     try {
+//         const { studentId } = req.params;
+//         const student = await Student.findById(studentId);
+//         if (!student) return res.status(404).json({ error: "Student not found" });
+
+//         res.json(student);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// };
+exports.getStudentDetails = async (req, res) => {
+    try {
+        const { uniqueID } = req.params; // Get unique ID from URL parameters
+        const student = await Student.findOne({ uniqueID }); // Search by unique ID
+        if (!student) return res.status(404).json({ error: "Student not found" });
+
+        res.json(student);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+// Attendance Stats
+exports.getAttendanceByDate = async (req, res) => {
+    try {
+      const { date } = req.query;
+      if (!date) {
+        return res.status(400).json({ error: "Date is required" });
+      }
+  
+      const filterDate = new Date(date);
+      filterDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+  
+      const nextDay = new Date(filterDate);
+      nextDay.setDate(filterDate.getDate() + 1);
+  
+      const students = await Student.find({
+        "attendance.date": {
+          $gte: filterDate,
+          $lt: nextDay
+        }
+      }, 'attendance name status'); // include status here
+  
+      // Simplified response (for testing)
+      res.json([
+        { studentName: "Student 1", status: "present", date: new Date() },
+        { studentName: "Student 2", status: "absent", date: new Date() },
+        // ... add more objects with 'present' and 'absent' status
+      ]);
+  
+    } catch (err) {
+      console.error("Error in getAttendanceByDate:", err);
+      res.status(500).json({ error: err.message });
+    }
+  };
