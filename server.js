@@ -5,7 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const User = require("./models/User");
-// const authRoutes = require("./routes/authRoutes");
+const AcademicSession = require("./models/AcademicSession");
 
 const app = express();
 
@@ -26,7 +26,6 @@ app.use(cors({
   credentials: true, // Allow cookies if necessary
 }));
 
-// app.use(cors({ credentials: true, origin: "https://attendswift.netlify.app/" }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -48,10 +47,12 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const subjectRoutes = require("./routes/subjectRoutes");
+const academicSessionRoutes = require("./routes/academicSessionRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use('/api/subjects', subjectRoutes);
+app.use("/api/academic-session", academicSessionRoutes);
 
 app.use("/uploads", express.static("uploads"));
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
