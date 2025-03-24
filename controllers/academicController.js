@@ -88,4 +88,25 @@ const getCurrentTerm = async (req, res) => {
     }
   };
 
-module.exports = { createSession, getAllSessions, getCurrentSession, createTerm, getTermsBySession, getCurrentTerm };
+  const seedAcademicSession = async () => {
+    try {
+      await AcademicSession.create({
+        name: "2024/2025",
+        startDate: new Date("2024-09-01"),
+        endDate: new Date("2025-07-15"),
+        terms: [
+          { name: "First Term", isCurrent: true },
+          { name: "Second Term", isCurrent: false },
+          { name: "Third Term", isCurrent: false },
+        ],
+        isCurrent: true,
+      });
+      console.log("Academic session seeded successfully");
+    } catch (error) {
+      console.error("Error seeding session:", error);
+    }
+  };
+  
+//   seedAcademicSession();
+
+module.exports = { createSession, getAllSessions, getCurrentSession, createTerm, getTermsBySession, getCurrentTerm, seedAcademicSession };
