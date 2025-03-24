@@ -9,8 +9,24 @@ const User = require("./models/User");
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',  // Local Development
+  'https://attendswift.netlify.app' // Netlify Production
+];
+
 // Middleware
-app.use(cors({ credentials: true, origin: "http://localhost:5173" })); // Adjust for Vite
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allow cookies if necessary
+}));
+
+// app.use(cors({ credentials: true, origin: "https://attendswift.netlify.app/" }));
 app.use(express.json());
 app.use(cookieParser());
 
