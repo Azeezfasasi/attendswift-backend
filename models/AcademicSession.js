@@ -14,11 +14,10 @@ const AcademicSessionSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  terms: {
-    type: String,
-    required: true,
-    },
-  isCurrent: {
+  terms: [
+    { type: String, required: true }
+  ],
+    isCurrent: {
     type: Boolean,
     default: false, // Only one session should be current
   },
