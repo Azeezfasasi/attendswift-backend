@@ -310,7 +310,7 @@ const updatePromotionStatus = async () => {
     try {
       await Student.updateMany(
         { promotionStatus: true },
-        { $set: { promotionStatus: "promoted" } }
+        { $set: { promotionStatus: "Promoted" } }
       );
   
       console.log("Promotion status updated successfully!");
@@ -320,4 +320,23 @@ const updatePromotionStatus = async () => {
   };
   
   updatePromotionStatus();
+
+// Bulk update promotion status
+exports.updatePromotionStatus = async (req, res) => {
+    try {
+      const { promotions } = req.body;
+  
+      // Loop through and update each student's promotionStatus
+      const updates = promotions.map((item) =>
+        Student.findByIdAndUpdate(item.studentId, { promotionStatus: item.status })
+      );
+  
+      await Promise.all(updates);
+  
+      res.status(200).json({ message: "Promotion status updated successfully!" });
+    } catch (error) {
+      console.error("Error updating promotion status:", error);
+      res.status(500).json({ message: "Error updating promotion status" });
+    }
+  };
   
