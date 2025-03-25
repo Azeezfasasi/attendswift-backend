@@ -21,7 +21,11 @@ const StudentSchema = new mongoose.Schema({
             status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" }
         }
     ],
-    promotionStatus: { type: Boolean, default: false },
+    promotionStatus: {
+        type: String,
+        enum: ["Pending", "Promoted", "Not eligible"],
+        default: "Pending", // Default value for new entries
+      },
     promotionHistory: [
         {
           date: { type: Date, default: Date.now },

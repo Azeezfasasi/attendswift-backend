@@ -253,21 +253,50 @@ exports.getAttendanceByDate = async (req, res) => {
   };
 
 // 9️⃣ Promote students to the next grade
+// exports.promoteStudents = async (req, res) => {
+//     try {
+//         const gradeOrder = ["JSS 1", "JSS 2", "JSS 3", "SSS 1", "SSS 2", "SSS 3"];
+
+//         // Find students who haven't been promoted yet
+//         const students = await Student.find({ promotionStatus: false });
+
+//         // Promote eligible students
+//         for (const student of students) {
+//             const currentGradeIndex = gradeOrder.indexOf(student.grade);
+//             if (currentGradeIndex !== -1 && currentGradeIndex < gradeOrder.length - 1) {
+//                 student.grade = gradeOrder[currentGradeIndex + 1];
+//                 student.promotionStatus = true;
+//                 await student.save();
+//             }
+//         }
+
+//         res.status(200).json({ message: "Students promoted successfully!" });
+//     } catch (err) {
+//         console.error("Error promoting students:", err);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// };
+
+// 9️⃣ Promote students to the next grade
 exports.promoteStudents = async (req, res) => {
     try {
         const gradeOrder = ["JSS 1", "JSS 2", "JSS 3", "SSS 1", "SSS 2", "SSS 3"];
 
-        // Find students who haven't been promoted yet
-        const students = await Student.find({ promotionStatus: false });
+        // Find students eligible for promotion
+        const students = await Student.find({ promotionStatus: { $ne: "Promoted" } });
 
-        // Promote eligible students
         for (const student of students) {
             const currentGradeIndex = gradeOrder.indexOf(student.grade);
+
+            // If student is in a valid grade and not in the final grade
             if (currentGradeIndex !== -1 && currentGradeIndex < gradeOrder.length - 1) {
                 student.grade = gradeOrder[currentGradeIndex + 1];
-                student.promotionStatus = true;
-                await student.save();
+                student.promotionStatus = "Promoted";
+            } else {
+                student.promotionStatus = "Not eligible"; // Already in the final grade
             }
+
+            await student.save();
         }
 
         res.status(200).json({ message: "Students promoted successfully!" });
@@ -276,3 +305,19 @@ exports.promoteStudents = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+const updatePromotionStatus = async () => {
+    try {
+      await Student.updateMany(
+        { promotionStatus: true },
+        { $set: { promotionStatus: "promoted" } }
+      );
+  
+      console.log("Promotion status updated successfully!");
+    } catch (error) {
+      console.error("Error updating promotion status:", error);
+    }
+  };
+  
+  updatePromotionStatus();
+  
