@@ -1,29 +1,6 @@
 const mongoose = require("mongoose");
 
 const AcademicSessionSchema = new mongoose.Schema({
-//   academicSession: {
-//     type: String,
-//     required: true,
-//     unique: true,
-//     trim: true
-//   },
-//   startDate: {
-//     type: Date,
-//     required: true,
-//   },
-//   endDate: {
-//     type: Date,
-//     required: true,
-//   },
-//   terms: {
-//     type: [String],
-//     required: true,
-//   },
-//     isCurrent: {
-//     type: Boolean,
-//     default: false, // Only one session should be current
-//   },
-// });
       academicSession: {
         type: String,
         required: true,
