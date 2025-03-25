@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const AcademicSessionSchema = new mongoose.Schema({
-  AcademicSession: {
+  academicSession: {
     type: String,
     required: true,
     unique: true, // Ensure each session is unique (e.g., "2024/2025")

@@ -2,11 +2,43 @@ const AcademicSession = require("../models/AcademicSession");
 const mongoose = require("mongoose");
 
 // Create a new academic session
+// exports.createSession = async (req, res) => {
+//     try {
+//       const { academicSession, startDate, endDate, terms, isCurrent } = req.body;
+  
+//       // Ensure only one session is marked as current
+//       if (isCurrent) {
+//         await AcademicSession.updateMany({ isCurrent: true }, { $set: { isCurrent: false } });
+//       }
+  
+//       const newSession = await AcademicSession.create({
+//         academicSession,
+//         startDate,
+//         endDate,
+//         terms,
+//         isCurrent,
+//       });
+  
+//       res.status(201).json({ message: "Session created successfully", newSession });
+//     } catch (error) {
+//       console.error("Error adding session: ", error);
+//       res.status(500).json({ error: error.message });
+//     }
+//   };
 exports.createSession = async (req, res) => {
     try {
+      console.log("Incoming data: ", req.body);
+  
       const { academicSession, startDate, endDate, terms, isCurrent } = req.body;
   
-      // Ensure only one session is marked as current
+      if (!academicSession || !startDate || !endDate || !terms) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+  
+      if (!Array.isArray(terms)) {
+        return res.status(400).json({ error: "Terms must be an array" });
+      }
+  
       if (isCurrent) {
         await AcademicSession.updateMany({ isCurrent: true }, { $set: { isCurrent: false } });
       }
@@ -25,6 +57,7 @@ exports.createSession = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+  
   
   // Get all academic sessions
   exports.getAllSessions = async (req, res) => {
