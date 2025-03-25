@@ -4,7 +4,8 @@ const AcademicSessionSchema = new mongoose.Schema({
   academicSession: {
     type: String,
     required: true,
-    unique: true, // Ensure each session is unique (e.g., "2024/2025")
+    unique: true,
+    trim: true
   },
   startDate: {
     type: Date,
