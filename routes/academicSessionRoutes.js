@@ -22,6 +22,7 @@ const {
   deleteSession,
 } = require("../controllers/academicController");
 
+// /api/academicsessions
 router.post("/", createSession);
 router.get("/", getAllSessions);
 router.get("/current", getCurrentSession);

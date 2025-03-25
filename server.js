@@ -52,7 +52,7 @@ const academicSessionRoutes = require("./routes/academicSessionRoutes");
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use('/api/subjects', subjectRoutes);
-app.use("/api/sessions", academicSessionRoutes);
+app.use("/api/academicsessions", academicSessionRoutes);
 
 app.use("/uploads", express.static("uploads"));
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
