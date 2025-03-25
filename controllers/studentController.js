@@ -306,20 +306,20 @@ exports.promoteStudents = async (req, res) => {
     }
 };
 
-const updatePromotionStatus = async () => {
-    try {
-      await Student.updateMany(
-        { promotionStatus: true },
-        { $set: { promotionStatus: "Promoted" } }
-      );
+// const updatePromotionStatus = async () => {
+//     try {
+//       await Student.updateMany(
+//         { promotionStatus: true },
+//         { $set: { promotionStatus: "Promoted" } }
+//       );
   
-      console.log("Promotion status updated successfully!");
-    } catch (error) {
-      console.error("Error updating promotion status:", error);
-    }
-  };
+//       console.log("Promotion status updated successfully!");
+//     } catch (error) {
+//       console.error("Error updating promotion status:", error);
+//     }
+//   };
   
-  updatePromotionStatus();
+//   updatePromotionStatus();
 
 // Bulk update promotion status
 exports.updatePromotionStatus = async (req, res) => {
