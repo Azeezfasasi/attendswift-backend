@@ -19,6 +19,7 @@ const generateUniqueId = async () => {
     return uniqueId;
 };
 
+// Function to generate a unique 9-digit number
 exports.addStudent = async (req, res) => {
     try {
         const { name, email, grade, gender, section, age } = req.body;
@@ -217,8 +218,7 @@ exports.getStudentDetails = async (req, res) => {
     }
 };
 
-
-// Attendance Stats
+// 9️⃣ Get attendance by date
 exports.getAttendanceByDate = async (req, res) => {
     try {
       const { date } = req.query;
@@ -251,3 +251,28 @@ exports.getAttendanceByDate = async (req, res) => {
       res.status(500).json({ error: err.message });
     }
   };
+
+// 9️⃣ Promote students to the next grade
+exports.promoteStudents = async (req, res) => {
+    try {
+        const gradeOrder = ["JSS 1", "JSS 2", "JSS 3", "SSS 1", "SSS 2", "SSS 3"];
+
+        // Find students who haven't been promoted yet
+        const students = await Student.find({ promotionStatus: false });
+
+        // Promote eligible students
+        for (const student of students) {
+            const currentGradeIndex = gradeOrder.indexOf(student.grade);
+            if (currentGradeIndex !== -1 && currentGradeIndex < gradeOrder.length - 1) {
+                student.grade = gradeOrder[currentGradeIndex + 1];
+                student.promotionStatus = true;
+                await student.save();
+            }
+        }
+
+        res.status(200).json({ message: "Students promoted successfully!" });
+    } catch (err) {
+        console.error("Error promoting students:", err);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};

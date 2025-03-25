@@ -13,5 +13,6 @@ router.get("/absence-requests", StudentController.getAllAbsenceRequests);
 router.get("/absences/:studentId", StudentController.viewAbsences);
 router.get("/:studentId", StudentController.getStudentDetails);
 router.get("/attendance", StudentController.getAttendanceByDate);
+router.put("/promote", StudentController.promoteStudents);
 
 module.exports = router;
