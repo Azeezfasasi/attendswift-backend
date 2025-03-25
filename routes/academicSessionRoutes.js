@@ -11,3 +11,21 @@
 // router.get("/term/current", getCurrentTerm);
 
 // module.exports = router;
+
+const express = require("express");
+const router = express.Router();
+const {
+  createSession,
+  getAllSessions,
+  getCurrentSession,
+  updateSession,
+  deleteSession,
+} = require("../controllers/academicController");
+
+router.post("/", createSession);
+router.get("/", getAllSessions);
+router.get("/current", getCurrentSession);
+router.put("/:id", updateSession);
+router.delete("/:id", deleteSession);
+
+module.exports = router;

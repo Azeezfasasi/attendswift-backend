@@ -47,12 +47,12 @@ app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const subjectRoutes = require("./routes/subjectRoutes");
-// const academicSessionRoutes = require("./routes/academicSessionRoutes");
+const academicSessionRoutes = require("./routes/academicSessionRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/students", studentRoutes);
 app.use('/api/subjects', subjectRoutes);
-// app.use("/api/academic-session", academicSessionRoutes);
+app.use("/api/sessions", academicSessionRoutes);
 
 app.use("/uploads", express.static("uploads"));
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
