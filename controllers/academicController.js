@@ -44,10 +44,10 @@ exports.createSession = async (req, res) => {
       }
 
        // Check for duplicates before insertion
-    const existingSession = await AcademicSession.findOne({ academicSession });
-    if (existingSession) {
-      return res.status(409).json({ message: "Session already exists" });
-    }
+        const existingSession = await AcademicSession.findOne({ academicSession });
+        if (existingSession) {
+        return res.status(409).json({ message: "Session already exists" });
+        }
   
       const newSession = await AcademicSession.create({
         academicSession,
