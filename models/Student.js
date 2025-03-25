@@ -22,6 +22,12 @@ const StudentSchema = new mongoose.Schema({
         }
     ],
     promotionStatus: { type: Boolean, default: false },
+    promotionHistory: [
+        {
+          date: { type: Date, default: Date.now },
+          promotedTo: String,
+        },
+      ],
 });
 
 module.exports = mongoose.model("Student", StudentSchema);
