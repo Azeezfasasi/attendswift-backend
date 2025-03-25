@@ -1,16 +1,6 @@
 const Student = require("../models/Student");
 
 // 1️⃣ Add a new student
-// exports.addStudent = async (req, res) => {
-//     try {
-//         const { name, email, grade, gender, section, age } = req.body;
-//         const student = await Student.create({ name, email, grade, section, age, gender, attendance: [], absences: [] });
-//         res.json(student);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
-
 const { v4: uuidv4 } = require("uuid"); // Import UUID
 
 // Function to generate a unique 9-digit number
@@ -215,17 +205,6 @@ exports.viewAbsences = async (req, res) => {
 };
 
 // 8️⃣ View student details
-// exports.getStudentDetails = async (req, res) => {
-//     try {
-//         const { studentId } = req.params;
-//         const student = await Student.findById(studentId);
-//         if (!student) return res.status(404).json({ error: "Student not found" });
-
-//         res.json(student);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// };
 exports.getStudentDetails = async (req, res) => {
     try {
         const { uniqueID } = req.params; // Get unique ID from URL parameters
