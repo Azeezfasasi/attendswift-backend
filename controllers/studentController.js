@@ -219,36 +219,69 @@ exports.getStudentDetails = async (req, res) => {
 };
 
 // 9️⃣ Get attendance by date
+// exports.getAttendanceByDate = async (req, res) => {
+//     try {
+//       const { date } = req.query;
+//       if (!date) {
+//         return res.status(400).json({ error: "Date is required" });
+//       }
+  
+//       const filterDate = new Date(date);
+//       filterDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
+  
+//       const nextDay = new Date(filterDate);
+//       nextDay.setDate(filterDate.getDate() + 1);
+  
+//       const students = await Student.find({
+//         "attendance.date": {
+//           $gte: filterDate,
+//           $lt: nextDay
+//         }
+//       }, 'attendance name status'); // include status here
+
+//       console.log("Students:", students);
+  
+//       //  Send the actual fetched data
+//       res.json(students);
+  
+//     } catch (err) {
+//       console.error("Error in getAttendanceByDate:", err);
+//       res.status(500).json({ error: err.message });
+//     }
+//   };
 exports.getAttendanceByDate = async (req, res) => {
     try {
-      const { date } = req.query;
-      if (!date) {
-        return res.status(400).json({ error: "Date is required" });
-      }
-  
-      const filterDate = new Date(date);
-      filterDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000
-  
-      const nextDay = new Date(filterDate);
-      nextDay.setDate(filterDate.getDate() + 1);
-  
-      const students = await Student.find({
-        "attendance.date": {
-          $gte: filterDate,
-          $lt: nextDay
+        const { date } = req.query;
+        if (!date) {
+            return res.status(400).json({ error: "Date is required" });
         }
-      }, 'attendance name status'); // include status here
 
-      console.log("Students:", students);
-  
-      //  Send the actual fetched data
-      res.json(students);
-  
+        const filterDate = new Date(date);
+        filterDate.setHours(0, 0, 0, 0);
+
+        const nextDay = new Date(filterDate);
+        nextDay.setDate(filterDate.getDate() + 1);
+
+        console.log("Filter Date:", filterDate);
+        console.log("Next Day:", nextDay);
+
+        const students = await Student.find({
+            "attendance.date": {
+                $gte: filterDate,
+                $lt: nextDay,
+            },
+        }, 'attendance name status');
+
+        console.log("Students from DB:", students); // Log the students from the database
+
+        res.json(students);
+        console.log("Students sent in response:", students); // Log the students sent in the response
+
     } catch (err) {
-      console.error("Error in getAttendanceByDate:", err);
-      res.status(500).json({ error: err.message });
+        console.error("Error in getAttendanceByDate:", err);
+        res.status(500).json({ error: err.message });
     }
-  };
+};
 
 // 9️⃣ Promote students to the next grade
 exports.promoteStudents = async (req, res) => {
