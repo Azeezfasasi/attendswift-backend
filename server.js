@@ -57,4 +57,8 @@ app.use("/api/academicsessions", academicSessionRoutes);
 app.use("/uploads", express.static("uploads"));
 console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
-
+// Global Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
