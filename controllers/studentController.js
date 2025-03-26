@@ -238,6 +238,8 @@ exports.getAttendanceByDate = async (req, res) => {
           $lt: nextDay
         }
       }, 'attendance name status'); // include status here
+
+      console.log("Students:", students);
   
       //  Send the actual fetched data
       res.json(students);
