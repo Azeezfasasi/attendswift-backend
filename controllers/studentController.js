@@ -239,43 +239,14 @@ exports.getAttendanceByDate = async (req, res) => {
         }
       }, 'attendance name status'); // include status here
   
-      // Simplified response (for testing)
-      res.json([
-        { studentName: "Student 1", status: "present", date: new Date() },
-        { studentName: "Student 2", status: "absent", date: new Date() },
-        // ... add more objects with 'present' and 'absent' status
-      ]);
+      //  Send the actual fetched data
+      res.json(students);
   
     } catch (err) {
       console.error("Error in getAttendanceByDate:", err);
       res.status(500).json({ error: err.message });
     }
   };
-
-// 9️⃣ Promote students to the next grade
-// exports.promoteStudents = async (req, res) => {
-//     try {
-//         const gradeOrder = ["JSS 1", "JSS 2", "JSS 3", "SSS 1", "SSS 2", "SSS 3"];
-
-//         // Find students who haven't been promoted yet
-//         const students = await Student.find({ promotionStatus: false });
-
-//         // Promote eligible students
-//         for (const student of students) {
-//             const currentGradeIndex = gradeOrder.indexOf(student.grade);
-//             if (currentGradeIndex !== -1 && currentGradeIndex < gradeOrder.length - 1) {
-//                 student.grade = gradeOrder[currentGradeIndex + 1];
-//                 student.promotionStatus = true;
-//                 await student.save();
-//             }
-//         }
-
-//         res.status(200).json({ message: "Students promoted successfully!" });
-//     } catch (err) {
-//         console.error("Error promoting students:", err);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// };
 
 // 9️⃣ Promote students to the next grade
 exports.promoteStudents = async (req, res) => {
@@ -305,21 +276,6 @@ exports.promoteStudents = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
-
-// const updatePromotionStatus = async () => {
-//     try {
-//       await Student.updateMany(
-//         { promotionStatus: true },
-//         { $set: { promotionStatus: "Promoted" } }
-//       );
-  
-//       console.log("Promotion status updated successfully!");
-//     } catch (error) {
-//       console.error("Error updating promotion status:", error);
-//     }
-//   };
-  
-//   updatePromotionStatus();
 
 // Bulk update promotion status
 exports.updatePromotionStatus = async (req, res) => {
